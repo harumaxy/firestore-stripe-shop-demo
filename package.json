@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "stripe:login": "stripe login",
-    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhook"
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhook",
+    "seed": "bun scripts/seed.ts",
+    "seed:prod": "NODE_ENV=production bun scripts/seed.ts"
   },
   "dependencies": {
     "firebase": "^12.14.0",

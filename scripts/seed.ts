@@ -1,13 +1,20 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator, collection, addDoc } from "firebase/firestore";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const app = initializeApp({
-  apiKey: "demo-key",
-  projectId: "demo-project",
+  apiKey: isProduction ? process.env.NEXT_PUBLIC_FIREBASE_API_KEY! : "demo-key",
+  authDomain: isProduction ? process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN! : undefined,
+  projectId: isProduction ? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID! : "demo-project",
 });
 
 const db = getFirestore(app);
-connectFirestoreEmulator(db, "localhost", 8080);
+if (!isProduction) {
+  connectFirestoreEmulator(db, "localhost", 8080);
+}
+
+console.log(`Seeding to: ${isProduction ? "production Firestore" : "emulator"}`);
 
 const products = [
   {
