@@ -44,6 +44,11 @@ export default function Home() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId, userId: user?.uid }),
     });
+    if (res.status === 409) {
+      setPurchasedIds((prev) => [...prev, productId]);
+      setCheckingOut(null);
+      return;
+    }
     const { url } = await res.json();
     window.location.href = url;
   };
