@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { FieldValue } from "firebase-admin/firestore";
+import { adminDb } from "@/lib/firebase-admin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -19,13 +19,13 @@ export async function POST(req: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    await setDoc(doc(collection(db, "orders"), session.id), {
+    await adminDb.collection("orders").doc(session.id).set({
       productId: session.metadata?.productId ?? "",
       userId: session.metadata?.userId ?? "",
       amount: session.amount_total ?? 0,
       status: "paid",
       stripeSessionId: session.id,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
   }
 
