@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
-  const { productId } = await req.json();
+  const { productId, userId } = await req.json();
 
   const productDoc = await getDoc(doc(db, "products", productId));
   if (!productDoc.exists()) {
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     mode: "payment",
     success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/`,
-    metadata: { productId },
+    metadata: { productId, userId },
   });
 
   return NextResponse.json({ url: session.url });

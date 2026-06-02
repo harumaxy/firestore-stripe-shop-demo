@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    // stripeSessionId をドキュメントIDとして使い冪等性を確保
     await setDoc(doc(collection(db, "orders"), session.id), {
       productId: session.metadata?.productId ?? "",
+      userId: session.metadata?.userId ?? "",
       amount: session.amount_total ?? 0,
       status: "paid",
       stripeSessionId: session.id,
