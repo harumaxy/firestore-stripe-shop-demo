@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# firestore-stripe-shop-demo
 
-## Getting Started
+Firebase Firestore + Stripe を使ったデジタル商品ストアのデモ実装。
 
-First, run the development server:
+**デモ:** https://firestore-stripe-shop-demo.vercel.app/
+
+---
+
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---------|------|
+| Framework | Next.js 15 (App Router) |
+| DB | Firebase Firestore |
+| 認証 | Firebase Authentication |
+| 決済 | Stripe Checkout |
+| スタイリング | Tailwind CSS |
+| デプロイ | Vercel |
+
+## 機能
+
+- 商品一覧表示（Firestoreから取得）
+- メール/パスワード認証（未ログインはログイン画面にリダイレクト）
+- Stripe Checkout による決済
+- Webhook による決済確定 + Firestore への注文書き込み
+- 購入済み商品のバッジ表示・重複購入防止
+
+## アーキテクチャ
+
+```
+[Firestore] products
+    ↓
+[Next.js] 商品一覧
+    ↓ 購入ボタン
+[/api/checkout] Stripe Checkout Session 作成
+    ↓
+[Stripe] 決済（テストカード: 4242 4242 4242 4242）
+    ↓ Webhook
+[/api/webhook] 署名検証 → Firestore orders に書き込み
+```
+
+## セットアップ
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+cp .env.example .env.local
+# .env.local に各種キーを設定
+```
+
+### Firebase Emulator 起動
+
+```bash
+bunx firebase emulators:start
+# UI: http://localhost:4000
+```
+
+### サンプルデータ投入
+
+```bash
+bun run seed          # エミュレータ
+bun run seed:prod     # 本番Firestore
+```
+
+### Stripe Webhook ローカル受信
+
+```bash
+bun run stripe:listen
+```
+
+### 開発サーバー起動
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 環境変数
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`.env.example` を参照。
